@@ -2,17 +2,22 @@ package ru.yandex.practicum.collector.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
 public class ScenarioAddedEvent extends HubEvent {
+    @NotBlank
     @Size(min = 3)
     private String name;
 
     @NotEmpty
+    @Valid
     private List<ScenarioCondition> conditions;
 
     @NotEmpty
+    @Valid
     private List<DeviceAction> actions;
 
     public String getName() {

@@ -1,8 +1,15 @@
 package ru.yandex.practicum.collector.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class DeviceAction {
+    @NotBlank
     private String sensorId;
+
+    @NotNull
     private ActionType type;
+
     private Integer value;
 
     public String getSensorId() {
