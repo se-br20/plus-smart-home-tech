@@ -8,5 +8,3 @@ aggregator:
     topic:
       sensors: telemetry.sensors.v1
       snapshots: telemetry.snapshots.v1
-
-
