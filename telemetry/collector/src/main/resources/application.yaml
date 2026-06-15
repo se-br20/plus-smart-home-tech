@@ -15,8 +15,13 @@ spring:
       retry:
         useRandomPolicy: true
         max-interval: 6000
+
 server:
   port: 0
+
+grpc:
+  server:
+    port: 59091
 
 eureka:
   client:
