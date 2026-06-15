@@ -1,13 +1,13 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:shopping-store-db
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: jdbc:postgresql://localhost:5434/shopping_store
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
 
   sql:

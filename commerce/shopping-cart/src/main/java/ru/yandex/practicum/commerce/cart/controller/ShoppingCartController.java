@@ -1,5 +1,9 @@
 package ru.yandex.practicum.commerce.cart.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.commerce.cart.service.ShoppingCartService;
 import ru.yandex.practicum.commerce.client.ShoppingCartClient;
@@ -10,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@Validated
 @RestController
 public class ShoppingCartController implements ShoppingCartClient {
 
@@ -20,27 +25,30 @@ public class ShoppingCartController implements ShoppingCartClient {
     }
 
     @Override
-    public ShoppingCartDto getShoppingCart(String username) {
+    public ShoppingCartDto getShoppingCart(@NotBlank String username) {
         return service.getShoppingCart(username);
     }
 
     @Override
-    public ShoppingCartDto addProductToShoppingCart(String username, Map<UUID, Long> products) {
+    public ShoppingCartDto addProductToShoppingCart(@NotBlank String username,
+                                                    @NotEmpty Map<UUID, Long> products) {
         return service.addProductToShoppingCart(username, products);
     }
 
     @Override
-    public void deactivateCurrentShoppingCart(String username) {
+    public void deactivateCurrentShoppingCart(@NotBlank String username) {
         service.deactivateCurrentShoppingCart(username);
     }
 
     @Override
-    public ShoppingCartDto removeFromShoppingCart(String username, List<UUID> productIds) {
+    public ShoppingCartDto removeFromShoppingCart(@NotBlank String username,
+                                                  @NotEmpty List<UUID> productIds) {
         return service.removeFromShoppingCart(username, productIds);
     }
 
     @Override
-    public ShoppingCartDto changeProductQuantity(String username, ChangeProductQuantityRequest request) {
+    public ShoppingCartDto changeProductQuantity(@NotBlank String username,
+                                                 @Valid ChangeProductQuantityRequest request) {
         return service.changeProductQuantity(username, request);
     }
 }

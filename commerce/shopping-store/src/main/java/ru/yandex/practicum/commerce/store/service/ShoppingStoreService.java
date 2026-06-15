@@ -81,6 +81,8 @@ public class ShoppingStoreService {
                 ));
 
         product.setProductState(ProductState.DEACTIVATE);
+        productRepository.save(product);
+
         return true;
     }
 

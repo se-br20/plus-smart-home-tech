@@ -1,10 +1,13 @@
 package ru.yandex.practicum.commerce.warehouse.controller;
 
+import jakarta.validation.Valid;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.commerce.client.WarehouseClient;
 import ru.yandex.practicum.commerce.dto.*;
 import ru.yandex.practicum.commerce.warehouse.service.WarehouseService;
 
+@Validated
 @RestController
 public class WarehouseController implements WarehouseClient {
 
@@ -16,7 +19,7 @@ public class WarehouseController implements WarehouseClient {
 
     @Override
     @PutMapping("/api/v1/warehouse")
-    public void newProductInWarehouse(@RequestBody NewProductInWarehouseRequest request) {
+    public void newProductInWarehouse(@RequestBody @Valid NewProductInWarehouseRequest request) {
         service.newProductInWarehouse(request);
     }
 
@@ -28,7 +31,7 @@ public class WarehouseController implements WarehouseClient {
 
     @Override
     @PostMapping("/api/v1/warehouse/add")
-    public void addProductToWarehouse(@RequestBody AddProductToWarehouseRequest request) {
+    public void addProductToWarehouse(@RequestBody @Valid AddProductToWarehouseRequest request) {
         service.addProductToWarehouse(request);
     }
 

@@ -1,12 +1,24 @@
 package ru.yandex.practicum.commerce.dto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 import java.util.UUID;
 
 public class NewProductInWarehouseRequest {
 
+    @NotNull
     private UUID productId;
+
     private Boolean fragile;
+
+    @Valid
+    @NotNull
     private DimensionDto dimension;
+
+    @NotNull
+    @Positive
     private Double weight;
 
     public UUID getProductId() {

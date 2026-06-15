@@ -1,9 +1,20 @@
 package ru.yandex.practicum.commerce.dto;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 public class DimensionDto {
 
+    @NotNull
+    @Positive
     private Double width;
+
+    @NotNull
+    @Positive
     private Double height;
+
+    @NotNull
+    @Positive
     private Double depth;
 
     public Double getWidth() {

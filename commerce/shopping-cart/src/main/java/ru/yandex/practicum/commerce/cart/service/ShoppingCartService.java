@@ -9,7 +9,6 @@ import ru.yandex.practicum.commerce.client.WarehouseClient;
 import ru.yandex.practicum.commerce.dto.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.dto.ShoppingCartDto;
 import ru.yandex.practicum.commerce.exception.NoProductsInShoppingCartException;
-import ru.yandex.practicum.commerce.exception.NotAuthorizedUserException;
 
 import java.util.List;
 import java.util.Map;
@@ -32,77 +31,56 @@ public class ShoppingCartService {
 
     @Transactional
     public ShoppingCartDto getShoppingCart(String username) {
-        checkUsername(username);
-
         ShoppingCart cart = getOrCreateActiveCart(username);
-
         return mapper.toDto(cart);
     }
 
     @Transactional
     public ShoppingCartDto addProductToShoppingCart(String username, Map<UUID, Long> products) {
-        checkUsername(username);
-
         ShoppingCart cart = getOrCreateActiveCart(username);
 
         products.forEach((productId, quantity) ->
                 cart.getProducts().merge(productId, quantity, Long::sum)
         );
 
-        ShoppingCartDto dto = mapper.toDto(cart);
+        warehouseClient.checkProductQuantityEnoughForShoppingCart(mapper.toDto(cart));
 
-        warehouseClient.checkProductQuantityEnoughForShoppingCart(dto);
-
-        return dto;
+        return mapper.toDto(cart);
     }
 
     @Transactional
     public ShoppingCartDto removeFromShoppingCart(String username, List<UUID> productIds) {
-        checkUsername(username);
+        ShoppingCart cart = getActiveCart(username);
 
-        ShoppingCart cart = getActiveCartOrThrow(username);
-
-        for (UUID productId : productIds) {
-            if (!cart.getProducts().containsKey(productId)) {
-                throw new NoProductsInShoppingCartException(
-                        "Товара нет в корзине: " + productId
-                );
-            }
-
-            cart.getProducts().remove(productId);
+        if (cart.getProducts().isEmpty()) {
+            throw new NoProductsInShoppingCartException("Корзина пуста");
         }
+
+        productIds.forEach(cart.getProducts()::remove);
 
         return mapper.toDto(cart);
     }
 
     @Transactional
     public ShoppingCartDto changeProductQuantity(String username, ChangeProductQuantityRequest request) {
-        checkUsername(username);
+        ShoppingCart cart = getActiveCart(username);
 
-        ShoppingCart cart = getActiveCartOrThrow(username);
-
-        if (!cart.getProducts().containsKey(request.getProductId())) {
-            throw new NoProductsInShoppingCartException(
-                    "Товара нет в корзине: " + request.getProductId()
-            );
+        if (cart.getProducts().isEmpty()) {
+            throw new NoProductsInShoppingCartException("Корзина пуста");
         }
 
         cart.getProducts().put(request.getProductId(), request.getNewQuantity());
 
-        ShoppingCartDto dto = mapper.toDto(cart);
+        warehouseClient.checkProductQuantityEnoughForShoppingCart(mapper.toDto(cart));
 
-        warehouseClient.checkProductQuantityEnoughForShoppingCart(dto);
-
-        return dto;
+        return mapper.toDto(cart);
     }
 
     @Transactional
     public void deactivateCurrentShoppingCart(String username) {
-        checkUsername(username);
-
-        ShoppingCart cart = getActiveCartOrThrow(username);
-
+        ShoppingCart cart = getActiveCart(username);
         cart.setActive(false);
+        repository.save(cart);
     }
 
     private ShoppingCart getOrCreateActiveCart(String username) {
@@ -114,16 +92,8 @@ public class ShoppingCartService {
                 });
     }
 
-    private ShoppingCart getActiveCartOrThrow(String username) {
+    private ShoppingCart getActiveCart(String username) {
         return repository.findByUsernameAndActiveTrue(username)
-                .orElseThrow(() -> new NoProductsInShoppingCartException(
-                        "Активная корзина не найдена"
-                ));
-    }
-
-    private void checkUsername(String username) {
-        if (username == null || username.isBlank()) {
-            throw new NotAuthorizedUserException("Имя пользователя не должно быть пустым");
-        }
+                .orElseThrow(() -> new NoProductsInShoppingCartException("Активная корзина не найдена"));
     }
 }
