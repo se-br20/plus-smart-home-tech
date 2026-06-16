@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: collector
+
+  config:
+    import: "optional:configserver:http://localhost:8888"
+
+  cloud:
+    config:
+      fail-fast: false
+
+server:
+  port: 0
+
+grpc:
+  server:
+    port: 59091
+
+collector:
+  kafka:
+    bootstrap-servers: localhost:9092
+    topic:
+      sensors: telemetry.sensors.v1
+      hubs: telemetry.hubs.v1
+
+eureka:
+  client:
+    enabled: false

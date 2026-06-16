@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: aggregator
+
+  config:
+    import: "optional:configserver:http://localhost:8888"
+
+  cloud:
+    config:
+      fail-fast: false
+
+server:
+  port: 0
+
+aggregator:
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: aggregator
+    topic:
+      sensors: telemetry.sensors.v1
+      snapshots: telemetry.snapshots.v1
+
+eureka:
+  client:
+    enabled: false
