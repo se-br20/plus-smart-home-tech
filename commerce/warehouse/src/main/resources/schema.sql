@@ -7,3 +7,8 @@ CREATE TABLE IF NOT EXISTS warehouse_products (
                                                   weight DOUBLE PRECISION,
                                                   quantity BIGINT
 );
+
+CREATE TABLE IF NOT EXISTS order_bookings (
+                                              order_id UUID PRIMARY KEY,
+                                              delivery_id UUID
+);
