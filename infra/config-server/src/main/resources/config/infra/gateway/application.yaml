@@ -9,42 +9,42 @@ spring:
           enabled: true
 
       routes:
-        - id: shopping_cart_service_route
+        - id: shopping-cart
           uri: lb://shopping-cart
           predicates:
             - Path=/shopping-cart/**
           filters:
             - PrefixPath=/api/v1
 
-        - id: shopping_store_service_route
+        - id: shopping-store
           uri: lb://shopping-store
           predicates:
             - Path=/shopping-store/**
           filters:
             - PrefixPath=/api/v1
-            - name: Retry
-              args:
-                retries: 3
-                statuses:
-                  - NOT_FOUND
-                methods:
-                  - GET
 
-        - id: order_service_route
+        - id: warehouse
+          uri: lb://warehouse
+          predicates:
+            - Path=/warehouse/**
+          filters:
+            - PrefixPath=/api/v1
+
+        - id: order
           uri: lb://order
           predicates:
             - Path=/order/**
           filters:
             - PrefixPath=/api/v1
 
-        - id: payment_service_route
+        - id: payment
           uri: lb://payment
           predicates:
             - Path=/payment/**
           filters:
             - PrefixPath=/api/v1
 
-        - id: delivery_service_route
+        - id: delivery
           uri: lb://delivery
           predicates:
             - Path=/delivery/**

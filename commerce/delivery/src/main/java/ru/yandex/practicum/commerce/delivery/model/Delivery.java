@@ -1,10 +1,18 @@
 package ru.yandex.practicum.commerce.delivery.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 import ru.yandex.practicum.commerce.dto.DeliveryState;
 
 import java.util.UUID;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "deliveries")
 public class Delivery {
@@ -28,108 +36,4 @@ public class Delivery {
 
     @Enumerated(EnumType.STRING)
     private DeliveryState deliveryState = DeliveryState.CREATED;
-
-    public UUID getDeliveryId() {
-        return deliveryId;
-    }
-
-    public void setDeliveryId(UUID deliveryId) {
-        this.deliveryId = deliveryId;
-    }
-
-    public UUID getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(UUID orderId) {
-        this.orderId = orderId;
-    }
-
-    public String getFromCountry() {
-        return fromCountry;
-    }
-
-    public void setFromCountry(String fromCountry) {
-        this.fromCountry = fromCountry;
-    }
-
-    public String getFromCity() {
-        return fromCity;
-    }
-
-    public void setFromCity(String fromCity) {
-        this.fromCity = fromCity;
-    }
-
-    public String getFromStreet() {
-        return fromStreet;
-    }
-
-    public void setFromStreet(String fromStreet) {
-        this.fromStreet = fromStreet;
-    }
-
-    public String getFromHouse() {
-        return fromHouse;
-    }
-
-    public void setFromHouse(String fromHouse) {
-        this.fromHouse = fromHouse;
-    }
-
-    public String getFromFlat() {
-        return fromFlat;
-    }
-
-    public void setFromFlat(String fromFlat) {
-        this.fromFlat = fromFlat;
-    }
-
-    public String getToCountry() {
-        return toCountry;
-    }
-
-    public void setToCountry(String toCountry) {
-        this.toCountry = toCountry;
-    }
-
-    public String getToCity() {
-        return toCity;
-    }
-
-    public void setToCity(String toCity) {
-        this.toCity = toCity;
-    }
-
-    public String getToStreet() {
-        return toStreet;
-    }
-
-    public void setToStreet(String toStreet) {
-        this.toStreet = toStreet;
-    }
-
-    public String getToHouse() {
-        return toHouse;
-    }
-
-    public void setToHouse(String toHouse) {
-        this.toHouse = toHouse;
-    }
-
-    public String getToFlat() {
-        return toFlat;
-    }
-
-    public void setToFlat(String toFlat) {
-        this.toFlat = toFlat;
-    }
-
-    public DeliveryState getDeliveryState() {
-        return deliveryState;
-    }
-
-    public void setDeliveryState(DeliveryState deliveryState) {
-        this.deliveryState = deliveryState;
-    }
 }

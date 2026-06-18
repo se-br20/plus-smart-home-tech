@@ -1,45 +1,33 @@
 package ru.yandex.practicum.commerce.delivery.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.commerce.client.OrderClient;
 import ru.yandex.practicum.commerce.client.WarehouseClient;
+import ru.yandex.practicum.commerce.delivery.config.DeliveryProperties;
 import ru.yandex.practicum.commerce.delivery.mapper.DeliveryMapper;
 import ru.yandex.practicum.commerce.delivery.model.Delivery;
 import ru.yandex.practicum.commerce.delivery.repository.DeliveryRepository;
-import ru.yandex.practicum.commerce.dto.*;
+import ru.yandex.practicum.commerce.dto.DeliveryDto;
+import ru.yandex.practicum.commerce.dto.DeliveryState;
+import ru.yandex.practicum.commerce.dto.OrderDto;
+import ru.yandex.practicum.commerce.dto.ShippedToDeliveryRequest;
 import ru.yandex.practicum.commerce.exception.NoDeliveryFoundException;
-import ru.yandex.practicum.commerce.exception.NotEnoughInfoInOrderToCalculateException;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class DeliveryService {
-
-    private static final BigDecimal BASE_COST = new BigDecimal("5.0");
-    private static final BigDecimal ADDRESS_1_MULTIPLIER = new BigDecimal("1");
-    private static final BigDecimal ADDRESS_2_MULTIPLIER = new BigDecimal("2");
-    private static final BigDecimal FRAGILE_RATE = new BigDecimal("0.2");
-    private static final BigDecimal WEIGHT_RATE = new BigDecimal("0.3");
-    private static final BigDecimal VOLUME_RATE = new BigDecimal("0.2");
-    private static final BigDecimal DIFFERENT_STREET_RATE = new BigDecimal("0.2");
 
     private final DeliveryRepository repository;
     private final DeliveryMapper mapper;
     private final OrderClient orderClient;
     private final WarehouseClient warehouseClient;
-
-    public DeliveryService(DeliveryRepository repository,
-                           DeliveryMapper mapper,
-                           OrderClient orderClient,
-                           WarehouseClient warehouseClient) {
-        this.repository = repository;
-        this.mapper = mapper;
-        this.orderClient = orderClient;
-        this.warehouseClient = warehouseClient;
-    }
+    private final DeliveryProperties properties;
 
     @Transactional
     public DeliveryDto planDelivery(DeliveryDto deliveryDto) {
@@ -56,7 +44,7 @@ public class DeliveryService {
     @Transactional(readOnly = true)
     public BigDecimal deliveryCost(OrderDto order) {
         if (order == null || order.getDeliveryId() == null) {
-            throw new NotEnoughInfoInOrderToCalculateException("В заказе нет deliveryId");
+            throw new NoDeliveryFoundException("В заказе нет deliveryId");
         }
 
         Delivery delivery = repository.findById(order.getDeliveryId())
@@ -64,28 +52,28 @@ public class DeliveryService {
                         "Доставка не найдена: " + order.getDeliveryId()
                 ));
 
-        BigDecimal result = BASE_COST;
+        BigDecimal result = properties.getBaseCost();
 
         if (containsAddress2(delivery)) {
-            result = result.add(BASE_COST.multiply(ADDRESS_2_MULTIPLIER));
+            result = result.add(properties.getBaseCost().multiply(properties.getAddress2Multiplier()));
         } else {
-            result = result.add(BASE_COST.multiply(ADDRESS_1_MULTIPLIER));
+            result = result.add(properties.getBaseCost().multiply(properties.getAddress1Multiplier()));
         }
 
         if (Boolean.TRUE.equals(order.getFragile())) {
-            result = result.add(result.multiply(FRAGILE_RATE));
+            result = result.add(result.multiply(properties.getFragileRate()));
         }
 
         if (order.getDeliveryWeight() != null) {
-            result = result.add(BigDecimal.valueOf(order.getDeliveryWeight()).multiply(WEIGHT_RATE));
+            result = result.add(BigDecimal.valueOf(order.getDeliveryWeight()).multiply(properties.getWeightRate()));
         }
 
         if (order.getDeliveryVolume() != null) {
-            result = result.add(BigDecimal.valueOf(order.getDeliveryVolume()).multiply(VOLUME_RATE));
+            result = result.add(BigDecimal.valueOf(order.getDeliveryVolume()).multiply(properties.getVolumeRate()));
         }
 
         if (!Objects.equals(delivery.getFromStreet(), delivery.getToStreet())) {
-            result = result.add(result.multiply(DIFFERENT_STREET_RATE));
+            result = result.add(result.multiply(properties.getDifferentStreetRate()));
         }
 
         return result;
@@ -103,8 +91,7 @@ public class DeliveryService {
         request.setDeliveryId(delivery.getDeliveryId());
 
         warehouseClient.shippedToDelivery(request);
-
-        orderClient.assembly(orderId);
+        orderClient.delivery(orderId);
     }
 
     @Transactional
@@ -114,7 +101,7 @@ public class DeliveryService {
         delivery.setDeliveryState(DeliveryState.DELIVERED);
         repository.save(delivery);
 
-        orderClient.delivery(orderId);
+        orderClient.deliverySuccess(orderId);
     }
 
     @Transactional
@@ -135,14 +122,14 @@ public class DeliveryService {
     }
 
     private boolean containsAddress2(Delivery delivery) {
-        return contains(delivery.getFromCountry(), "ADDRESS_2")
-                || contains(delivery.getFromCity(), "ADDRESS_2")
-                || contains(delivery.getFromStreet(), "ADDRESS_2")
-                || contains(delivery.getFromHouse(), "ADDRESS_2")
-                || contains(delivery.getFromFlat(), "ADDRESS_2");
+        return contains(delivery.getFromCountry(), properties.getAddress2Marker())
+                || contains(delivery.getFromCity(), properties.getAddress2Marker())
+                || contains(delivery.getFromStreet(), properties.getAddress2Marker())
+                || contains(delivery.getFromHouse(), properties.getAddress2Marker())
+                || contains(delivery.getFromFlat(), properties.getAddress2Marker());
     }
 
-    private boolean contains(String value, String text) {
-        return value != null && value.contains(text);
+    private boolean contains(String value, String marker) {
+        return value != null && marker != null && value.contains(marker);
     }
 }
