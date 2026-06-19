@@ -62,10 +62,6 @@ public class OrderController {
         return service.deliveryFailed(orderId);
     }
 
-    @PostMapping("/delivery/success")
-    public OrderDto deliverySuccess(@RequestBody UUID orderId) {return service.deliverySuccess(orderId);
-    }
-
     @PostMapping("/completed")
     public OrderDto complete(@RequestBody UUID orderId) {
         return service.complete(orderId);

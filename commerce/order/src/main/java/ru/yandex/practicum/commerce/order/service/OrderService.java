@@ -162,13 +162,6 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderDto deliverySuccess(UUID orderId) {
-        Order order = getOrder(orderId);
-        order.setState(OrderState.DELIVERED);
-        return mapper.toDto(repository.save(order));
-    }
-
-    @Transactional
     public OrderDto complete(UUID orderId) {
         Order order = getOrder(orderId);
         order.setState(OrderState.COMPLETED);

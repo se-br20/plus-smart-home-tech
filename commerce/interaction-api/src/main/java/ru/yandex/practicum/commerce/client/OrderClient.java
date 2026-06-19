@@ -21,9 +21,9 @@ public interface OrderClient {
     @PostMapping("/delivery")
     OrderDto delivery(@RequestBody UUID orderId);
 
-    @PostMapping("/delivery/success")
-    OrderDto deliverySuccess(@RequestBody UUID orderId);
-
     @PostMapping("/delivery/failed")
     OrderDto deliveryFailed(@RequestBody UUID orderId);
+
+    @PostMapping("/assembly")
+    OrderDto assembly(@RequestBody UUID orderId);
 }

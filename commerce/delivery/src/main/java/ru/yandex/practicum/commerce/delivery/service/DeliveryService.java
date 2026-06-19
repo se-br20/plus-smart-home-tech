@@ -65,11 +65,13 @@ public class DeliveryService {
         }
 
         if (order.getDeliveryWeight() != null) {
-            result = result.add(BigDecimal.valueOf(order.getDeliveryWeight()).multiply(properties.getWeightRate()));
+            result = result.add(BigDecimal.valueOf(order.getDeliveryWeight())
+                    .multiply(properties.getWeightRate()));
         }
 
         if (order.getDeliveryVolume() != null) {
-            result = result.add(BigDecimal.valueOf(order.getDeliveryVolume()).multiply(properties.getVolumeRate()));
+            result = result.add(BigDecimal.valueOf(order.getDeliveryVolume())
+                    .multiply(properties.getVolumeRate()));
         }
 
         if (!Objects.equals(delivery.getFromStreet(), delivery.getToStreet())) {
@@ -91,7 +93,7 @@ public class DeliveryService {
         request.setDeliveryId(delivery.getDeliveryId());
 
         warehouseClient.shippedToDelivery(request);
-        orderClient.delivery(orderId);
+        orderClient.assembly(orderId);
     }
 
     @Transactional
@@ -100,8 +102,7 @@ public class DeliveryService {
 
         delivery.setDeliveryState(DeliveryState.DELIVERED);
         repository.save(delivery);
-
-        orderClient.deliverySuccess(orderId);
+        orderClient.delivery(orderId);
     }
 
     @Transactional

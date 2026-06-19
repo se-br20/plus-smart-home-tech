@@ -1,15 +1,15 @@
 CREATE TABLE IF NOT EXISTS orders (
-                                      order_id UUID PRIMARY KEY,
-                                      shopping_cart_id UUID,
-                                      payment_id UUID,
-                                      delivery_id UUID,
-                                      state VARCHAR NOT NULL,
-                                      delivery_weight DOUBLE PRECISION,
-                                      delivery_volume DOUBLE PRECISION,
-                                      fragile BOOLEAN,
-                                      total_price NUMERIC,
-                                      delivery_price NUMERIC,
-                                      product_price NUMERIC
+order_id UUID PRIMARY KEY,
+shopping_cart_id UUID,
+payment_id UUID,
+delivery_id UUID,
+state VARCHAR NOT NULL,
+delivery_weight DOUBLE PRECISION,
+delivery_volume DOUBLE PRECISION,
+fragile BOOLEAN,
+total_price NUMERIC,
+delivery_price NUMERIC,
+product_price NUMERIC
 );
 
 CREATE TABLE IF NOT EXISTS order_products (
