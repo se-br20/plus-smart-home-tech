@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5434/delivery
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+  sql:
+    init:
+      mode: always
+
+delivery:
+  cost:
+    base-cost: 5.0
+    address1-multiplier: 1
+    address2-multiplier: 2
+    fragile-rate: 0.2
+    weight-rate: 0.3
+    volume-rate: 0.2
+    different-street-rate: 0.2
+    address1-marker: ADDRESS_1
+    address2-marker: ADDRESS_2
